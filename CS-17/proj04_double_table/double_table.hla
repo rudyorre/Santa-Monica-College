@@ -1,0 +1,85 @@
+//    file: double_table.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 3/28/21
+// purpose: print out table of doubled values of incrementing values of the input
+//   input: single 8-bit integer
+//  output: 4 x 4 table
+
+// ex:
+// Gimme a starting value: 4
+// 4:  8 16 32
+// 5: 10 20 40
+// 6: 12 24 48
+// 7: 14 28 56
+
+program double_table;
+
+#include( "stdlib.hhf" );
+static
+starting_value : int8 := 0;
+multiplier : int8 := 0;
+
+begin double_table;
+
+stdout.put( "Gimme a starting value: " );
+stdin.get( starting_value );
+// mov( starting_value, multiplier );
+
+// print row 1
+stdout.put( starting_value, ": ");
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, nl );
+
+// return starting_value to original bit state
+rol( 5, starting_value );
+// increment starting_value
+add( 1, starting_value );
+
+// print row 2
+stdout.put( starting_value, ": ");
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, nl );
+
+// return starting_value to original bit state
+rol( 5, starting_value );
+// increment starting_value
+add( 1, starting_value );
+
+// print row 3
+stdout.put( starting_value, ": ");
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, nl );
+
+// return starting_value to original bit state
+rol( 5, starting_value );
+// increment starting_value
+add( 1, starting_value );
+
+// print row 4
+stdout.put( starting_value, ": ");
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, " " );
+rol( 1, starting_value );
+stdout.put( starting_value, nl );
+
+// return starting_value to original bit state
+rol( 5, starting_value );
+// increment starting_value
+add( 1, starting_value );
+
+end double_table;
