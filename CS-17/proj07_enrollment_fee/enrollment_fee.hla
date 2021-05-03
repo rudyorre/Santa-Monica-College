@@ -1,0 +1,209 @@
+//
+// 8-bit value: (inputted as a 2-digit hexadecimal)
+// [][] [][][][] [] []
+//   |      |     |  L->ID card?
+//   V      |     V
+// semester V   CA resident?
+//    enrolled units
+//
+// the enrollment fee is $46/unit for residents and $370/unit for all others.
+// The student services fee is $50 for Winter or Summer and $53 for Fall or Spring.
+// The ID card is optional which saves $13 when its purchase is declined.
+
+
+program enrollment_fee;
+
+#include ( "stdlib.hhf " );
+static
+data : int8; // user input
+semester : int8; // 00 = Fall, 01 = Winter, 10 = Spring, 11 = Summer
+units : int8; // number of units
+resident : int8; // 0 = false, 1 = true
+ID : int8; // 0 = false, 1 = true
+rate : int16; // resident or non-resident rate
+total_fees : int16 := 0;
+
+begin enrollment_fee;
+
+stdout.put ( "Feed me(2 hex digits with the bits sseeeeri): ");
+stdin.get ( CL );
+mov ( CL, data );
+
+// validate for correctly formed data (0 units not allowed)
+mov ( data, BL );
+and ( %0011_1100, BL );
+cmp ( BL, 0 );
+je badly_formed;
+
+// checking which semester
+semester_start:
+
+mov ( data, BL );
+and ( %1100_0000, BL ); // extracting semester bits
+
+cmp ( BL, %0000_0000 );
+jz Fall;
+cmp ( BL, %0100_0000 );
+jz Winter;
+cmp ( BL, %1000_0000 );
+jz Spring;
+cmp ( BL, %1100_0000 );
+jz Summer;
+
+semester_end:
+
+// checking how many units
+unit_start:
+
+mov ( data, BL );
+and ( %0011_1100, BL );
+ror ( 2, BL );
+mov ( BL, units );
+stdout.put ( units, " unit");
+
+// if units != 1: print an "s"
+cmp ( units, 1 );
+je unit_end;
+stdout.put ( "s" );
+
+unit_end:
+
+// checking CA resident or not
+resident_start:
+
+mov ( data, BL );
+and ( %0000_0010, BL );
+ror ( 1, BL );
+mov ( BL, resident );
+
+// resident == 1 ?
+cmp ( resident, 1 );
+je is_resident;
+stdout.put ( nl, "Non-Resident" ); // if not resident
+mov ( 370, rate );
+jmp resident_end;
+
+is_resident:
+stdout.put ( nl, "CA Resident" ); // is resident
+mov ( 46, rate );
+
+resident_end:
+
+// checking ID or not
+ID_start:
+
+mov ( data, BL );
+and ( %0000_0001, BL );
+mov ( BL, ID );
+
+// ID == 1 ?
+cmp ( ID, 1 );
+je has_ID;
+stdout.put ( nl, "No ID Card" ); // if no ID
+sub ( 13, total_fees );
+jmp ID_end;
+
+has_ID:
+stdout.put ( nl, "ID Card" ); // has ID
+
+ID_end:
+
+// calculate fees
+fees_start:
+mov ( units, BL ); // index 0
+and ( %0000_0001, BL );
+cmp ( BL, 1 );
+je add1;
+add1_end:
+mov ( units, BL ); // index 1
+and ( %0000_0010, BL );
+ror ( 1, BL );
+cmp ( BL, 1 );
+je add2;
+add2_end:
+mov ( units, BL ); // index 2
+and ( %0000_0100, BL );
+ror ( 2, BL );
+cmp ( BL, 1 );
+je add4;
+add4_end:
+mov ( units, BL ); // index 3
+and ( %0000_1000, BL );
+ror ( 3, BL );
+cmp ( BL, 1 );
+je add8;
+add8_end:
+
+stdout.put ( nl, "Total Fees = $ ", total_fees );
+fees_end:
+
+
+
+
+jmp program_done;
+
+Fall:
+    stdout.put ( "Fall Semester", nl );
+    add ( 53, total_fees );
+    jmp semester_end;
+
+Winter:
+    stdout.put ( "Winter Semester", nl );
+    add ( 50, total_fees );
+    jmp semester_end;
+
+Spring:
+    stdout.put ( "Spring Semester", nl );
+    add ( 53, total_fees );
+    jmp semester_end;
+
+Summer:
+    stdout.put ( "Summer Semester", nl );
+    add ( 50, total_fees );
+    jmp semester_end;
+
+add1:
+    mov ( rate, DX );
+    add ( DX, total_fees );
+    jmp add1_end;
+
+add2:
+    mov ( rate, DX );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    jmp add2_end;
+
+add4:
+    mov ( rate, DX );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    jmp add4_end;
+
+add8:
+    mov ( rate, DX );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    add ( DX, total_fees );
+    jmp add8_end;
+
+badly_formed:
+    stdout.put ( "Sorry Charlie, badly formed data!" );
+    jmp program_done;
+
+
+
+
+
+
+
+
+program_done:
+
+end enrollment_fee;
