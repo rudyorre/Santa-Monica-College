@@ -1,0 +1,87 @@
+//    file: recursiveMultiplyFunction.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 5/2/21
+// purpose: recursive implementation of multiplication
+//   input: two unsigned integers
+//  output: the product of those numbers
+
+program recursiveMultiplyFunction;
+
+#include( "stdlib.hhf" );
+static
+A : uns32;
+B : uns32;
+// recursiveMultiply conditions:
+// recursiveMultiply( a, b ) = 0 when a == 0 or b == 0;
+// recursiveMultiply( a, b ) = a when b == 1;
+// recursiveMultiply( a, b ) = b when a == 1;
+// recursiveMultiply( a, b ) = a + recursiveMultiply( a, b-1 ) otherwise;
+procedure recursiveMultiply( i: uns32; j : uns32 ); @nodisplay; @noframe;
+  static
+  returnAddress : dword;
+  begin recursiveMultiply;
+  // getting return address and parameters from stack
+  pop( returnAddress );
+  pop( j );
+  pop( i );
+  // push address back
+  push( returnAddress );
+
+  // zero condition check
+  mov( 0, EBX );
+  cmp( EBX, i );
+  je isZero; // checking if 0 == i
+  cmp( EBX, j );
+  je isZero; // checking if 0 == j
+
+  // one condition check
+  mov( 1, EBX );
+  cmp( EBX, i );
+  je iIsOne; // checking if i == 1
+  cmp( EBX, j );
+  je jIsOne; // checking if j == 1
+
+  // recursive condition
+  jmp neither;
+
+  isZero:
+    mov( 0, EAX );
+    jmp endConditions;
+
+  iIsOne:
+    mov( j, EAX );
+    jmp endConditions;
+
+  jIsOne:
+    mov( i, EAX );
+    jmp endConditions;
+
+  neither:
+    dec( j ); // decrement j
+    // recursively calling recursiveMultiply
+    push( i );
+    push( j );
+    call recursiveMultiply; // will compute recursiveMultiply(i, j-1)
+    add( i, EAX ); // will compute i + recursiveMultiply(i, j-1)
+
+  endConditions:
+
+  ret();
+  end recursiveMultiply;
+
+begin recursiveMultiplyFunction;
+
+stdout.put( "Feed Me A: " );
+stdin.get( A );
+stdout.put( "Feed Me B: " );
+stdin.get( B );
+
+push( A );
+push( B );
+call recursiveMultiply;
+
+stdout.put( "A*B = " );
+stdout.putu32( EAX );
+
+end recursiveMultiplyFunction;
