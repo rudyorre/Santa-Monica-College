@@ -1,0 +1,85 @@
+//    file: largestFinderFunction.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 5/2/21
+// purpose: find largest number out of 3, and return true/false whether they are all equal or not
+//   input: three integers
+//  output: largest of the three ints, true/false depending on equality
+
+program largestFinderFunction;
+
+#include( "stdlib.hhf" );
+static
+a : int16;
+b : int16;
+c : int16;
+d : int16; // padding
+
+procedure largestfinder( x: int16; y: int16; z: int16 ); @nodisplay; @noframe;
+  static
+  returnAddress : dword;
+  temp : int16;
+  begin largestfinder;
+  // pop parameters and return address off stack
+  pop( returnAddress );
+  pop( temp ); // padding
+  pop( z );
+  pop( temp ); // padding
+  pop( y );
+  pop( temp ); // padding
+  pop( x );
+  // push return address back to stack
+  push( returnAddress );
+
+  // default case for AL (1 if all equal, 0 otherwise)
+  mov( %0000_0000, AL );
+
+  // checking x == y == z
+  mov( y, BX );
+  cmp( x, BX );
+  jne endEquals; // if x != y, stop checking
+  cmp( BX, z );
+  jne endEquals; // if y != z, stop checking
+  mov( %0000_0001, AL ); // x == y == z
+  endEquals:
+
+  // finding greatest
+  mov( x, BX );
+  cmp( BX, y );
+  jge cmpZ; // if x >= y
+  mov( y, BX ); // else: if y > x
+  cmpZ:
+  cmp( BX, z );
+  jge endSequence; // if max(x,y) >= z
+  mov( z, BX ); // z > max(x,y)
+
+  endSequence:
+
+
+  ret();
+  end largestfinder;
+
+begin largestFinderFunction;
+
+stdout.put( "Feed Me X: ");
+stdin.get( a );
+stdout.put( "Feed Me Y: ");
+stdin.get( b );
+stdout.put( "Feed Me Z: ");
+stdin.get( c );
+
+push( a );
+push( d ); // padding
+push( b );
+push( d ); // padding
+push( c );
+push( d ); // padding
+call largestfinder;
+
+stdout.put( "The largest value is " );
+stdout.puti16( BX );
+stdout.put( nl, "AL = ");
+stdout.puti8( AL );
+
+
+end largestFinderFunction;
