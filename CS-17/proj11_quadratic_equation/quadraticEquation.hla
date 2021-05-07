@@ -1,0 +1,86 @@
+
+//    file: quadraticEquation.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 5/7/21
+// purpose: quadratic formula for positive discriminants only
+//   input: three real32 (coefficients of quadratic equation)
+//  output: two roots of that equation (one root is impossible since discriminant is positive,
+//                                      and complex roots are also impossible due to constraint)
+program quadraticEquation;
+
+#include( "stdlib.hhf" );
+static
+  a : real32; // x^2 coefficient
+  b : real32; // x coefficient
+  c : real32; // constant
+  x1 : real32; // first root
+  x2 : real32; // second root
+  sqrtd : real32; // sqrt(discriminant)
+  zero : real32 := 0;
+  two : real32 := 2;
+  four : real32 := 4;
+
+begin quadraticEquation;
+
+  // input
+  stdout.put( "Gimme a value for a: " );
+  stdin.get( a );
+  stdout.put( "Gimme a value for b: " );
+  stdin.get( b );
+  stdout.put( "Gimme a value for c: " );
+  stdin.get( c );
+
+  // compute sqrt of discriminant divided by 2a (sqrtd)
+  // separating the quadratic formula to
+  // -b/(2*a) and sqrt(b**2 - 4*a*c)/(2*a) in order to
+  // minimize error, but computing the mul/div instruction
+  // as much as possible before any add/sub instructions.
+  finit();
+  fld( b );      // load b onto the stack
+  fld( st0 );    // duplicating b and load to stack
+  fmul();        // b * b
+  fld( four );   // load 4 to the stack
+  fld( a );      // load a to the stack
+  fmul();        // 4 * a
+  fld( c );      // load c to the stack
+  fmul();        // (4 * a) * c
+  fsub();        // (b * b) - (4 * a * c)
+  fsqrt();       // sqrt(b * b - 4 * a * c)
+  fld( two );    // load 2 to the stack
+  fld( a );      // load a to the stack
+  fmul();        // 2 * a
+  fdiv();        // sqrt(b**2 - 4*a*c) / (2*a)
+  fstp( sqrtd ); // save to sqrtd for later use
+
+  // compute first root (x1)
+  fld( zero );  // load 0 to the stack
+  fld( b );     // load b to the stack
+  fsub();       // 0 - b or just -b
+  fld( two );   // load 2 to the stack
+  fld( a );     // load a to the stack
+  fmul();       // 2 * a
+  fdiv();       // -b / (2 * a)
+  fld( sqrtd ); // load sqrt(b**2 - 4*a*c)/(2*a) to the stack
+  fadd();       // -b/(2*a) + sqrt(b**2 - 4*a*c)/(2*a)
+  fstp( x1 );   // save to x1
+
+  // compute first root (x2)
+  fld( zero );  // load 0 to the stack
+  fld( b );     // load b to the stack
+  fsub();       // 0 - b or just -b
+  fld( two );   // load 2 to the stack
+  fld( a );     // load a to the stack
+  fmul();       // 2 * a
+  fdiv();       // -b / (2 * a)
+  fld( sqrtd ); // load sqrt(b**2 - 4*a*c)/(2*a) to the stack
+  fsub();       // -b/(2*a) - sqrt(b**2 - 4*a*c)/(2*a)
+  fstp( x2 );   // save to x1
+
+  // output
+  stdout.put( "The solutions are x = " );
+  stdout.putr32( x2, 6, 3 );
+  stdout.put( " and x = " );
+  stdout.putr32( x1, 6, 3 );
+
+end quadraticEquation;
