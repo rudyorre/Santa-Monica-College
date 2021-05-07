@@ -1,0 +1,48 @@
+
+//    file: gradianConversion.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 5/7/21
+// purpose: converts input to Gradians for both turns/degrees inputs
+//   input: single real32
+//  output: Gradians if input were turns and Gradians if input were degrees
+program gradianConversion;
+
+#include( "stdlib.hhf" );
+static
+  number : real32;
+  turnGradian : real64;
+  degreeGradian : real64;
+  turnConstant : real64 := 400;
+  degreeConstant : real64 := 1.111;
+
+begin gradianConversion;
+
+  // input
+  stdout.put( "What's your number: " );
+  stdin.get( number );
+
+  // turns to Gradians conversion
+  finit();
+  fld( number );       // load input number onto stack
+  fld( turnConstant ); // turn to Gradian multiplier
+  fmul();              // multiply number and 400
+  fstp( turnGradian ); // store result into turnGradian
+
+  // degrees to Gradians conversion
+  finit();
+  fld( number );         // load input number onto stack
+  fld( degreeConstant ); // degree to Gradian multiplier
+  fmul();                // multiply number and 400
+  fstp( degreeGradian ); // store result into degreeGradian
+
+  // output
+  stdout.put( "Assuming you entered a turn amount, here's your Gradian: " );
+  stdout.putr64( turnGradian, 10, 3 );
+  stdout.put( nl );
+
+  stdout.put( "Assuming you entered a degree amount, here's your Gradian: " );
+  stdout.putr64( degreeGradian, 10, 3 );
+  stdout.put( nl );
+
+end gradianConversion;
