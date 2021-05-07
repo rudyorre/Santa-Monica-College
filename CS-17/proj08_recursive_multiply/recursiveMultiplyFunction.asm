@@ -58,6 +58,7 @@ L808_recursiveMultiply__hla_:
 		pop	dword ptr [ebp+8]	;/* j */
 		pop	dword ptr [ebp+12]	;/* i */
 		push	dword ptr [L809_returnAddress__hla_+0]	;/* returnAddress */
+		push	ebx
 		mov	ebx, 0
 		cmp	ebx, dword ptr [ebp+12]	;/* i */
 		je	L810_isZero__hla_
@@ -71,18 +72,22 @@ L808_recursiveMultiply__hla_:
 		jmp	L813_neither__hla_
 
 L810_isZero__hla_:
+		pop	ebx
 		mov	eax, 0
 		jmp	L814_endConditions__hla_
 
 L811_iIsOne__hla_:
+		pop	ebx
 		mov	eax, dword ptr [ebp+8]	;/* j */
 		jmp	L814_endConditions__hla_
 
 L812_jIsOne__hla_:
+		pop	ebx
 		mov	eax, dword ptr [ebp+12]	;/* i */
 		jmp	L814_endConditions__hla_
 
 L813_neither__hla_:
+		pop	ebx
 		dec	dword ptr [ebp+8]	;/* j */
 		push	dword ptr [ebp+12]	;/* i */
 		push	dword ptr [ebp+8]	;/* j */
@@ -133,10 +138,17 @@ _HLAMain       :
 		call	STDIN_GETU32	; getu32
 		mov	dword ptr [L807_B__hla_+0], eax	;/* B */
 		pop	eax
+		mov	ebx, 15
+		push	ebx
+		call	STDOUT_PUTD	; putd
+		call	STDOUT_NEWLN	; newln
 		push	dword ptr [L806_A__hla_+0]	;/* A */
 		push	dword ptr [L807_B__hla_+0]	;/* B */
 		call	L808_recursiveMultiply__hla_
-		push	L872_str__hla_
+		push	ebx
+		call	STDOUT_PUTD	; putd
+		call	STDOUT_NEWLN	; newln
+		push	L910_str__hla_
 		call	STDOUT_PUTS	; puts
 		push	eax
 		call	STDOUT_PUTU32	; putu32

@@ -28,6 +28,9 @@ procedure recursiveMultiply( i: uns32; j : uns32 ); @nodisplay; @noframe;
   // push address back
   push( returnAddress );
 
+  // push EBX onto stack to preserve it's value
+  push( EBX );
+
   // zero condition check
   mov( 0, EBX );
   cmp( EBX, i );
@@ -46,18 +49,22 @@ procedure recursiveMultiply( i: uns32; j : uns32 ); @nodisplay; @noframe;
   jmp neither;
 
   isZero:
+    pop( EBX ); // restoring EBX to pre-function call
     mov( 0, EAX );
     jmp endConditions;
 
   iIsOne:
+    pop( EBX ); // restoring EBX to pre-function call
     mov( j, EAX );
     jmp endConditions;
 
   jIsOne:
+    pop( EBX ); // restoring EBX to pre-function call
     mov( i, EAX );
     jmp endConditions;
 
   neither:
+    pop( EBX ); // restoring EBX to pre-function call
     dec( j ); // decrement j
     // recursively calling recursiveMultiply
     push( i );
@@ -77,9 +84,14 @@ stdin.get( A );
 stdout.put( "Feed Me B: " );
 stdin.get( B );
 
+mov( 15, EBX );
+stdout.put( EBX, nl );
+
 push( A );
 push( B );
 call recursiveMultiply;
+
+stdout.put( EBX, nl );
 
 stdout.put( "A*B = " );
 stdout.putu32( EAX );
