@@ -1,0 +1,113 @@
+//    file: piglatin.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 5/24/21
+// purpose: prints piglatin version of some character
+//   input: character
+//  output: piglatin version of that character
+
+program charpiglatin;
+
+#include( "stdlib.hhf" );
+static
+data : byte;
+
+procedure piglatin( myCharacter : byte ); @nodisplay; @noframe;
+  static
+  returnAddress : dword;
+  temp16 : int16;
+  EBXvalue : dword;
+
+  begin piglatin;
+  // preserve registers --- EBX place on stack after pops
+  mov( EBX, EBXvalue );
+  // pop parameters and return address off stack
+  pop( returnAddress );
+  pop( temp16 ); // this is junk
+  pop( temp16 ); // this contains `data` in lower
+  mov( temp16, BX );
+  mov( BL, myCharacter );
+  // push return address back to stack
+  push( returnAddress );
+  // push back EBX EBX's value
+  push( EBXvalue );
+
+  mov( myCharacter, BL );
+  stdout.put( "piglatin reports: " );
+  stdout.putc( myCharacter );
+
+  ifLowerVowel:
+    cmp( BL, 97 ); // a
+    je lowerVowel;
+    cmp( BL, 101 ); // e
+    je lowerVowel;
+    cmp( BL, 105 ); // i
+    je lowerVowel;
+    cmp( BL, 111 ); // o
+    je lowerVowel;
+    cmp( BL, 117 ); // u
+    je lowerVowel;
+  ifUpperVowel:
+    cmp( BL, 65 ); // A
+    je upperVowel;
+    cmp( BL, 69 ); // E
+    je upperVowel;
+    cmp( BL, 73 ); // I
+    je upperVowel;
+    cmp( BL, 79 ); // O
+    je upperVowel;
+    cmp( BL, 85 ); // U
+    je upperVowel;
+  ifLowerConsonant:
+    cmp( BL, 97 );
+    jge ge97;
+    jmp ifUpperConsonant;
+    ge97:
+      cmp( BL, 122 );
+      jle lowerConsonant;
+  ifUpperConsonant:
+    cmp( BL, 65 );
+    jge ge65;
+    jmp other;
+    ge65:
+      cmp( BL, 90 );
+      jle upperConsonant;
+
+  jmp other;
+
+  lowerVowel:
+    stdout.put( "way", nl );
+    jmp exitSequence;
+  upperVowel:
+    stdout.put( "WAY", nl );
+    jmp exitSequence;
+  lowerConsonant:
+    stdout.put( "ay", nl );
+    jmp exitSequence;
+  upperConsonant:
+    stdout.put( "AY", nl );
+    jmp exitSequence;
+  other:
+    stdout.put( nl );
+    jmp exitSequence;
+
+  exitSequence:
+  pop( EBX );
+  ret();
+  end piglatin;
+
+begin charpiglatin;
+
+stdout.put( "gimme data: " );
+stdin.flushInput();
+stdin.getc(); // stores input char into AL
+mov( AL, data );
+
+mov(0, BX);
+mov(data, BL);
+push( BX ); // BH=0, BL=data
+mov(0, BX);
+push( BX ); // this is just junk padding
+call piglatin;
+
+end charpiglatin;
