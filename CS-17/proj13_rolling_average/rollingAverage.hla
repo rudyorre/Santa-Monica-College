@@ -1,0 +1,63 @@
+//    file: rollingAverage.hla
+//    name: Rudy Orre
+// section: 1770
+//    date: 5/24/21
+// purpose: computes the rolling average (only storing prev average and number of data points)
+//   input: real32 data point
+//  output: rolling average
+
+program rollingAverage;
+// algorithm:
+// avg = (n*avg + data)/(n+1)
+// n = n + 1
+#include( "stdlib.hhf" );
+static
+  more : byte := 121; // initalized to lowercase 'y'
+  data : real32; // input data point
+  average : real32 := 0; // initial average
+  prev_average : real32 := 0; // previous average
+  n : real32 := 0; // initial number of data points
+  one : real32 := 1;
+
+begin rollingAverage;
+
+  //stdout.put( "enter data point: " );
+  //stdin.get()
+
+  whileLoop:
+  whileCondition:
+    mov( more, BL );
+    cmp( BL, 121 );
+    jne whileEnd;
+  whileBody:
+    stdout.put( "enter data point: " );
+    stdin.get( data );
+    mov( average, prev_average );
+
+    finit();
+    fld( n );
+    fld( prev_average );
+    fmul();
+    fld( data );
+    fadd();
+    fld( n );
+    fld( one );
+    fadd();
+    fdiv();
+    fstp( average ); // store new avg into average
+    fld( n );
+    fld( one );
+    fadd();
+    fstp( n ); // incrementing n
+    stdout.put( "rolling average = " );
+    stdout.putr32( average, 6, 3 );
+
+    stdout.put( nl, "more data? " );
+    stdin.flushInput();
+    stdin.getc(); // stores input char into AL
+    mov( AL, more );
+    jmp whileCondition;
+  whileEnd:
+  stdout.put( "final rolling average = " );
+  stdout.putr32( average, 6, 3 );
+end rollingAverage;
